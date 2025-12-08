@@ -30,6 +30,10 @@ const canvas = document.getElementById('gameCanvas');
         }
         
         function startGame(difficulty) {
+            // Initialize audio on first user interaction
+            audioManager.init();
+            audioManager.startBackgroundMusic();
+            
             gameState.difficulty = difficulty;
             gameState.running = true;
             gameState.player.x = 275;
@@ -127,6 +131,7 @@ const canvas = document.getElementById('gameCanvas');
                     const letter = gameState.letters[i];
                     if (!gameState.failedLetters[letter.index]) {
                         gameState.failedLetters[letter.index] = letter.char;
+                        audioManager.playMiss(); // Play miss sound
                         updateHUD();
                         if (gameState.failedLetters.filter(l => l).length === gameState.targetWord.length) {
                             endGame(false);
@@ -144,10 +149,11 @@ const canvas = document.getElementById('gameCanvas');
                     const letter = gameState.letters[j];
                     
                     if (bullet.x > letter.x - 20 && bullet.x < letter.x + 20 &&
-                        bullet.y > letter.y - 20 && bullet.y < letter.y + 20) {
+                        bullet.y > letter.y - 20 && letter.y < letter.y + 20) {
                         gameState.bullets.splice(i, 1);
                         gameState.letters.splice(j, 1);
                         gameState.score += 10;
+                        audioManager.playHit(); // Play hit sound
                         updateHUD();
                         break;
                     }
@@ -212,6 +218,14 @@ const canvas = document.getElementById('gameCanvas');
         function endGame(won) {
             gameState.running = false;
             clearInterval(gameState.timer);
+            audioManager.stopBackgroundMusic();
+            
+            // Play victory or game over sound
+            if (won) {
+                audioManager.playVictory();
+            } else {
+                audioManager.playGameOver();
+            }
             
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('gameOverScreen').style.display = 'block';
@@ -255,9 +269,33 @@ const canvas = document.getElementById('gameCanvas');
             gameState.mouseX = e.clientX - rect.left;
         });
         
+        // Track touch movement on canvas (mobile support)
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            gameState.mouseX = touch.clientX - rect.left;
+        });
+        
         // Shoot on mouse click
         canvas.addEventListener('click', (e) => {
             if (gameState.running) {
+                audioManager.playShoot();
+                gameState.bullets.push({
+                    x: gameState.player.x + 25,
+                    y: gameState.player.y - 10
+                });
+            }
+        });
+        
+        // Shoot on touch tap (mobile support)
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameState.running) {
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                gameState.mouseX = touch.clientX - rect.left;
+                audioManager.playShoot();
                 gameState.bullets.push({
                     x: gameState.player.x + 25,
                     y: gameState.player.y - 10
@@ -269,6 +307,7 @@ const canvas = document.getElementById('gameCanvas');
         document.addEventListener('keydown', (e) => {
             if (e.key === ' ' && gameState.running) {
                 e.preventDefault();
+                audioManager.playShoot();
                 gameState.bullets.push({
                     x: gameState.player.x + 25,
                     y: gameState.player.y - 10
