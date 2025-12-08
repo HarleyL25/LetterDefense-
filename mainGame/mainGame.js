@@ -8,6 +8,7 @@ const canvas = document.getElementById('gameCanvas');
             bullets: [],
             letters: [],
             keys: {},
+            mouseX: 275,
             score: 0,
             timeLeft: 60,
             failedLetters: [],
@@ -99,11 +100,13 @@ const canvas = document.getElementById('gameCanvas');
         }
         
         function updatePlayer() {
-            if (gameState.keys['ArrowLeft'] && gameState.player.x > 0) {
-                gameState.player.x -= gameState.player.speed;
-            }
-            if (gameState.keys['ArrowRight'] && gameState.player.x < canvas.width - gameState.player.width) {
-                gameState.player.x += gameState.player.speed;
+            // Smoothly move player to mouse position
+            const targetX = Math.max(0, Math.min(gameState.mouseX - gameState.player.width / 2, canvas.width - gameState.player.width));
+            const dx = targetX - gameState.player.x;
+            
+            // Move towards target with speed limit
+            if (Math.abs(dx) > 1) {
+                gameState.player.x += Math.sign(dx) * Math.min(Math.abs(dx), gameState.player.speed);
             }
         }
         
@@ -246,11 +249,15 @@ const canvas = document.getElementById('gameCanvas');
             }
         }
         
-        document.addEventListener('keydown', (e) => {
-            gameState.keys[e.key] = true;
-            
-            if (e.key === ' ' && gameState.running) {
-                e.preventDefault();
+        // Track mouse movement on canvas
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            gameState.mouseX = e.clientX - rect.left;
+        });
+        
+        // Shoot on mouse click
+        canvas.addEventListener('click', (e) => {
+            if (gameState.running) {
                 gameState.bullets.push({
                     x: gameState.player.x + 25,
                     y: gameState.player.y - 10
@@ -258,6 +265,13 @@ const canvas = document.getElementById('gameCanvas');
             }
         });
         
-        document.addEventListener('keyup', (e) => {
-            gameState.keys[e.key] = false;
+        // Keep spacebar as alternative shooting option
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && gameState.running) {
+                e.preventDefault();
+                gameState.bullets.push({
+                    x: gameState.player.x + 25,
+                    y: gameState.player.y - 10
+                });
+            }
         });
