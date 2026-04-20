@@ -1,0 +1,172 @@
+body {
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    font-family: 'Courier New', monospace;
+    color: #fff;
+}
+
+#gameContainer {
+    text-align: center;
+}
+
+#menuScreen, #gameOverScreen {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    border: 3px solid #00ff88;
+    max-width: 500px;
+}
+
+h1 {
+    color: #00ff88;
+    font-size: 2.5em;
+    margin: 0 0 20px 0;
+    text-shadow: 0 0 10px #00ff88;
+}
+
+button {
+    background: #00ff88;
+    color: #1a1a2e;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background: #00cc6e;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #00ff88;
+}
+
+button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+canvas {
+    border: 3px solid #00ff88;
+    border-radius: 10px;
+    background: #0a0a1a;
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+}
+
+#hud {
+    display: flex;
+    justify-content: space-between;
+    width: 600px;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.hud-item {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid #00ff88;
+}
+
+#failedWord {
+    color: #ff4444;
+    font-size: 1.8em;
+    letter-spacing: 8px;
+}
+
+.instructions {
+    margin: 20px 0;
+    line-height: 1.8;
+    color: #aaa;
+}
+
+#finalStats {
+    margin: 20px 0;
+    font-size: 1.2em;
+    line-height: 1.8;
+}
+
+.unlock {
+    color: #ffd700;
+    font-size: 1.1em;
+    margin: 15px 0;
+    text-shadow: 0 0 10px #ffd700;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    #menuScreen, #gameOverScreen {
+        padding: 20px;
+        max-width: 90vw;
+    }
+    
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    button {
+        padding: 12px 20px;
+        font-size: 1em;
+        margin: 8px;
+    }
+    
+    #hud {
+        width: 100%;
+        max-width: 90vw;
+        flex-wrap: wrap;
+        font-size: 1em;
+        gap: 8px;
+    }
+    
+    .hud-item {
+        padding: 8px 12px;
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    canvas {
+        max-width: 90vw;
+        height: auto;
+    }
+    
+    .instructions {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+    
+    button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        width: 90%;
+    }
+    
+    #hud {
+        font-size: 0.85em;
+    }
+    
+    #failedWord {
+        font-size: 1.3em;
+        letter-spacing: 4px;
+    }
+}

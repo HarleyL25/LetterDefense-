@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Defense</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="menuScreen">
+            <h1>LETTER DEFENSE</h1>
+            <div class="instructions">
+                Move your mouse/finger to aim<br>
+                Click/tap to shoot (or press SPACEBAR)<br>
+                Destroy falling letters before they spell FAILED<br>
+                Survive 60 seconds to win!
+            </div>
+            <button onclick="startGame('easy')">EASY</button>
+            <button onclick="startGame('medium')">MEDIUM</button>
+            <button onclick="startGame('hard')">HARD</button>
+            <button id="impossibleBtn" onclick="startGame('impossible')" disabled>IMPOSSIBLE</button>
+        </div>
+        
+        <div id="gameScreen" style="display: none;">
+            <div id="hud">
+                <div class="hud-item">Time: <span id="timer">60</span>s</div>
+                <div class="hud-item">Word: <span id="failedWord">______</span></div>
+                <div class="hud-item">Score: <span id="score">0</span></div>
+            </div>
+            <canvas id="gameCanvas" width="600" height="450"></canvas>
+        </div>
+        
+        <div id="gameOverScreen" style="display: none;">
+            <h1 id="resultTitle"></h1>
+            <div id="finalStats"></div>
+            <div id="unlockMessage" class="unlock"></div>
+            <button onclick="showMenu()">MAIN MENU</button>
+            <button onclick="restartGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+    <script src="../js/audio.js"></script>
+    <script src="../js/game.js"></script>
+    </body>
+</html>
