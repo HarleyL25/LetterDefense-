@@ -5,106 +5,557 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letter Defense</title>
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: radial-gradient(ellipse at top, #1a1a3e 0%, #0a0a1a 70%);
             font-family: 'Courier New', monospace;
             color: #fff;
+            overflow-x: hidden;
         }
-        
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+                radial-gradient(1px 1px at 30% 40%, #aaccff, transparent),
+                radial-gradient(2px 2px at 50% 80%, #fff, transparent),
+                radial-gradient(1px 1px at 70% 10%, #fff, transparent),
+                radial-gradient(1.5px 1.5px at 90% 60%, #ffeedd, transparent),
+                radial-gradient(1px 1px at 15% 75%, #fff, transparent),
+                radial-gradient(1px 1px at 60% 45%, #ddeeff, transparent),
+                radial-gradient(1.5px 1.5px at 85% 35%, #fff, transparent);
+            background-size: 300px 300px;
+            opacity: 0.65;
+            animation: star-drift 40s linear infinite;
+        }
+
+        @keyframes star-drift {
+            from { background-position: 0 0; }
+            to   { background-position: 0 300px; }
+        }
+
         #gameContainer {
+            position: relative;
+            z-index: 1;
             text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        
-        #menuScreen, #gameOverScreen {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 40px;
-            border-radius: 15px;
-            border: 3px solid #00ff88;
-            max-width: 500px;
-        }
-        
-        h1 {
-            color: #00ff88;
-            font-size: 2.5em;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 10px #00ff88;
-        }
-        
+
         button {
             background: #00ff88;
             color: #1a1a2e;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 12px 24px;
+            font-size: 1.1em;
             font-family: 'Courier New', monospace;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px;
+            margin: 6px;
             border-radius: 8px;
-            transition: all 0.3s;
+            transition: all 0.25s;
         }
-        
+
         button:hover {
             background: #00cc6e;
             transform: scale(1.05);
             box-shadow: 0 0 20px #00ff88;
         }
-        
+
         button:disabled {
             background: #555;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
+        /* ============ Title / Lobby ============ */
+
+        #titleScreen {
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .brand { margin-bottom: 20px; }
+
+        .game-title {
+            font-size: 3.8em;
+            margin: 0;
+            color: #fff;
+            letter-spacing: 12px;
+            font-weight: bold;
+            text-shadow:
+                0 0 10px #00ff88,
+                0 0 25px #00ff88,
+                0 0 50px #00ff88;
+            animation: title-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes title-glow {
+            0%, 100% { text-shadow: 0 0 10px #00ff88, 0 0 25px #00ff88, 0 0 50px #00ff88; }
+            50%      { text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 80px #00ff88; }
+        }
+
+        .game-tagline {
+            color: #aaffcc;
+            letter-spacing: 4px;
+            font-size: 1.1em;
+            margin: 16px 0 0;
+            opacity: 0.85;
+        }
+
+        .mega-btn {
+            font-size: 1.4em;
+            padding: 18px 60px;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #0a0a1a;
+            border: 3px solid #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            animation: mega-pulse 2.2s ease-in-out infinite;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .mega-btn:hover { transform: scale(1.08); }
+
+        @keyframes mega-pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.5); }
+            50%      { box-shadow: 0 0 55px rgba(0, 255, 136, 0.95); }
+        }
+
+        .title-footer {
+            color: #556;
+            font-size: 0.8em;
+            letter-spacing: 2px;
+            margin-top: 40px;
+        }
+
+        /* ============ Screen Header ============ */
+
+        #worldSelectScreen,
+        #levelSelectScreen {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 20px 10px;
+        }
+
+        .screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 720px;
+            margin: 10px 0 14px;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 136, 0.5);
+            color: #00ff88;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            letter-spacing: 2px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 136, 0.15);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .section-title {
+            color: #fff;
+            font-size: 1.5em;
+            margin: 0;
+            letter-spacing: 6px;
+            text-shadow: 0 0 12px #00ff88;
+        }
+
+        .section-subtitle {
+            color: #aaa;
+            letter-spacing: 2px;
+            margin: 0 0 22px;
+            font-size: 0.95em;
+        }
+
+        .header-spacer { min-width: 90px; }
+
+        /* ============ World Select ============ */
+
+        .world-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 720px;
+            padding: 0 10px;
+        }
+
+        .world-card {
+            background: rgba(0, 0, 0, 0.65);
+            border: 3px solid var(--accent, #00ff88);
+            border-radius: 14px;
+            padding: 22px 14px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-height: 210px;
+            margin: 0;
+            font-size: 1em;
+        }
+
+        .world-card:not(:disabled):hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 30px var(--accent, #00ff88);
+            background: rgba(0, 0, 0, 0.85);
+        }
+
+        .world-card.locked {
+            opacity: 0.5;
+            border-color: #444;
+            cursor: not-allowed;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .world-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .world-icon {
+            font-size: 3.2em;
+            line-height: 1;
+            filter: drop-shadow(0 0 10px var(--accent, #00ff88));
+        }
+
+        .world-name {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: var(--accent, #00ff88);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .world-subtitle {
+            font-size: 0.85em;
+            color: #aaa;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+
+        .world-progress {
+            margin-top: auto;
+            font-size: 1em;
+            color: #ffd700;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .world-card.completed .world-progress::before { content: '✓ '; }
+
+        /* ============ Level Select ============ */
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 120px));
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+            padding: 0 10px;
+        }
+
+        .level-btn {
+            padding: 14px 6px;
+            font-size: 1em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border: 2px solid transparent;
+            transition: all 0.25s;
+            margin: 0;
+            min-height: 84px;
+        }
+
+        .level-icon {
+            font-size: 1.6em;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        .level-word {
+            font-size: 0.7em;
+            letter-spacing: 1px;
+            opacity: 0.85;
+        }
+
+        .level-btn.completed {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #1a1a2e;
+            border-color: #ffd700;
+        }
+
+        .level-btn.completed .level-icon {
+            color: #ffd700;
+            text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+        }
+
+        .level-btn.current {
+            background: #00ff88;
+            color: #1a1a2e;
+            border-color: #fff;
+            animation: level-pulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes level-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); transform: scale(1); }
+            50%      { box-shadow: 0 0 20px 6px rgba(0, 255, 136, 0.4); transform: scale(1.05); }
+        }
+
+        .level-btn.locked {
+            background: #2a2a3a;
+            color: #666;
+            border-color: #3a3a4a;
+            cursor: not-allowed;
+        }
+
+        .level-btn.locked:hover {
+            background: #2a2a3a;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .level-btn.locked .level-word { opacity: 0.4; }
+
+        .instructions {
+            margin: 26px 0 8px;
+            line-height: 1.8;
+            color: #778;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        /* ============ Game Screen ============ */
+
         canvas {
             border: 3px solid #00ff88;
             border-radius: 10px;
             background: #0a0a1a;
             box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            display: block;
+            max-width: 95vw;
+            max-height: calc(100vh - 180px);
+            aspect-ratio: 600 / 450;
+            height: auto;
+            cursor: crosshair;
         }
-        
-        #hud {
+
+        #gameScreen {
             display: flex;
-            justify-content: space-between;
-            width: 600px;
-            margin-bottom: 15px;
-            font-size: 1.3em;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hud-compact {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hud-chip {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 136, 0.35);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 0.9em;
+            color: #9fe9c3;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hud-chip strong {
+            color: #fff;
             font-weight: bold;
+            min-width: 2ch;
+            text-align: right;
+            display: inline-block;
         }
-        
-        .hud-item {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 2px solid #00ff88;
+
+        #wordDisplay {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 12px;
+            min-height: 50px;
         }
-        
-        #failedWord {
+
+        .letter-tile {
+            width: 38px;
+            height: 46px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.25s;
+        }
+
+        .letter-tile.defeated {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.25);
             color: #ff4444;
-            font-size: 1.8em;
-            letter-spacing: 8px;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
+            animation: tile-land 0.45s;
         }
-        
-        .instructions {
-            margin: 20px 0;
-            line-height: 1.8;
-            color: #aaa;
+
+        @keyframes tile-land {
+            0%   { transform: scale(1.5); box-shadow: 0 0 40px #ff4444; }
+            60%  { transform: scale(0.9); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 68, 68, 0.6); }
         }
-        
+
+        .canvas-wrap {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+        }
+
+        .pause-float {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            margin: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.65);
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            font-size: 1.2em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .pause-float:hover {
+            background: rgba(0, 255, 136, 0.25);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        /* ============ Pause Overlay ============ */
+
+        #pauseOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #pauseOverlay.active { display: flex; }
+
+        .pause-panel {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px 40px;
+            border-radius: 15px;
+            border: 3px solid #00ff88;
+            text-align: center;
+            min-width: 280px;
+        }
+
+        .pause-panel h2 {
+            color: #00ff88;
+            margin: 0 0 15px;
+            font-size: 2em;
+            text-shadow: 0 0 10px #00ff88;
+            letter-spacing: 4px;
+        }
+
+        .pause-panel button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        /* ============ Game Over ============ */
+
+        #gameOverScreen {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px 40px;
+            border-radius: 15px;
+            border: 3px solid #00ff88;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+
+        #resultTitle {
+            font-size: 2.4em;
+            margin: 0 0 12px;
+            letter-spacing: 6px;
+            text-shadow: 0 0 15px currentColor;
+        }
+
         #finalStats {
             margin: 20px 0;
-            font-size: 1.2em;
+            font-size: 1.1em;
             line-height: 1.8;
         }
-        
+
         .unlock {
             color: #ffd700;
             font-size: 1.1em;
@@ -115,37 +566,75 @@
 </head>
 <body>
     <div id="gameContainer">
-        <div id="menuScreen">
-            <h1>LETTER DEFENSE</h1>
+        <!-- Title / Lobby -->
+        <div id="titleScreen">
+            <div class="brand">
+                <h1 class="game-title">LETTER DEFENSE</h1>
+                <p class="game-tagline">Defend your word. Shoot the sky.</p>
+            </div>
+            <button class="mega-btn" onclick="showWorldSelect()">▶ PLAY</button>
+            <div class="title-footer">v1.0</div>
+        </div>
+
+        <!-- World Select -->
+        <div id="worldSelectScreen" style="display: none;">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showTitleScreen()">← TITLE</button>
+                <h2 class="section-title">SELECT WORLD</h2>
+                <div class="header-spacer"></div>
+            </div>
+            <div id="worldGrid" class="world-grid"></div>
+        </div>
+
+        <!-- Level Select -->
+        <div id="levelSelectScreen" style="display: none;">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showWorldSelect()">← WORLDS</button>
+                <h2 class="section-title" id="levelSelectTitle">WORLD</h2>
+                <div class="header-spacer"></div>
+            </div>
+            <p class="section-subtitle" id="levelSelectSubtitle"></p>
+            <div id="levelGrid" class="level-grid"></div>
             <div class="instructions">
-                Use ← → arrow keys to move<br>
-                Press SPACEBAR to shoot<br>
-                Destroy falling letters before they spell FAILED<br>
-                Survive 60 seconds to win!
+                Move mouse to aim, click to shoot — or ← → arrows + SPACE<br>
+                Destroy falling letters before they spell the target word
             </div>
-            <button onclick="startGame('easy')">EASY</button>
-            <button onclick="startGame('medium')">MEDIUM</button>
-            <button onclick="startGame('hard')">HARD</button>
-            <button id="impossibleBtn" onclick="startGame('impossible')" disabled>IMPOSSIBLE</button>
         </div>
-        
+
+        <!-- Game -->
         <div id="gameScreen" style="display: none;">
-            <div id="hud">
-                <div class="hud-item">Time: <span id="timer">60</span>s</div>
-                <div class="hud-item">Word: <span id="failedWord">______</span></div>
-                <div class="hud-item">Score: <span id="score">0</span></div>
+            <div class="hud-compact">
+                <span class="hud-chip" id="currentLevel">Level 1</span>
+                <span class="hud-chip">⏱ <strong id="timer">60</strong>s</span>
+                <span class="hud-chip">★ <strong id="score">0</strong></span>
             </div>
-            <canvas id="gameCanvas" width="600" height="450"></canvas>
+            <div id="wordDisplay"></div>
+            <div class="canvas-wrap">
+                <canvas id="gameCanvas" width="600" height="450"></canvas>
+                <button id="pauseBtn" class="pause-float" onclick="togglePause()" title="Pause (Esc)">⏸</button>
+            </div>
         </div>
-        
+
+        <!-- Pause Overlay -->
+        <div id="pauseOverlay">
+            <div class="pause-panel">
+                <h2>PAUSED</h2>
+                <button onclick="togglePause()">RESUME</button>
+                <button onclick="restartFromPause()">RESTART LEVEL</button>
+                <button onclick="quitToMenu()">MAIN MENU</button>
+            </div>
+        </div>
+
+        <!-- Game Over -->
         <div id="gameOverScreen" style="display: none;">
             <h1 id="resultTitle"></h1>
             <div id="finalStats"></div>
             <div id="unlockMessage" class="unlock"></div>
-            <button onclick="showMenu()">MAIN MENU</button>
+            <button onclick="backToLevelSelect()">LEVEL SELECT</button>
             <button onclick="restartGame()">PLAY AGAIN</button>
+            <button id="nextLevelBtn" onclick="nextLevel()" style="display:none;">NEXT LEVEL</button>
         </div>
     </div>
     <script src="mainGame.js"></script>
-    </body>
+</body>
 </html>
